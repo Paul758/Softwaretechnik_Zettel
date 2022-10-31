@@ -1,0 +1,30 @@
+Aufgabe 2)
+
+a)
+Nötige Schritte:
+1. git add <filename>
+2. git commit
+3. git push
+
+1.
+Mit dem add Befehl fügt man die angegebene Datei zum Index hinzu.
+Die Aktualisierungen in dieser Datei werden somit in den nächsten commit aufgenommen.
+
+2.
+Mit dem commit Befehl werden die Dateien aus dem Index in das lokale Repository hinzugefügt.
+
+3.
+Die Dateien aus dem lokalen Repository werden in das entfernte Repsository aufgenommen.
+
+
+
+b)
+.java Dateien entsprechen den erstellten Klassen im Projekt. Sie enthalten den Code und sollten daher versioniert,
+bzw. in das Repository mitaufgenommen werden.
+
+.class Dateien sind kompilierte .java Dateien. Wenn dem jeweiligen Nutzer die bereits versionierten .java Dateien zur
+Verfügung stehen, können sie über die IDE selbst kompiliert werden. Daher ist eine Versionierung nicht nötig.
+
+Aufgabe 3)
+
+b)
