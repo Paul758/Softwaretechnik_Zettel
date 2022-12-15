@@ -385,6 +385,45 @@ public class WalletModel {
 		return index;
 	}
 
+
+	//addItem Methode vor Refactoring
+	/*
+	public void addItem(final WalletItem parentItem, final WalletItem newItem) {
+		if (isRoot(parentItem)) {
+			if (newItem.getType() != ItemType.category)
+				throw new RuntimeException("Can only add category items to the root.");
+			parentItem.addChild(newItem);
+			itemsFlatList.add(newItem);
+
+		} else {
+
+			int index;
+			if (parentItem.getChildren() == null || parentItem.getChildren().size() == 0) {
+				//this parent category is empty, add after it
+				index = getItemIndex(parentItem);
+			} else {
+				//find the last child of the parentItem in the flat list and insert after that
+				WalletItem lastChildren = parentItem.getChildren().get(parentItem.getChildren().size() - 1);
+				index = getItemIndex(lastChildren);
+
+			}
+
+
+			if (index == itemsFlatList.size() - 1)
+				//last one, just append
+				itemsFlatList.add(newItem);
+			else
+				itemsFlatList.add(index + 1, newItem);
+
+			//add to tree structure
+			parentItem.addChild(newItem);
+		}
+		setModified(true);
+	}
+	*/
+
+
+
 	//* Anfang Aufgabe 2 *//
 	public void addItem(final WalletItem parentItem, final WalletItem newItem) {
 		//Prüfe, ob newItem unter Wurzel oder einer anderen Kategorie eingefügt wird
@@ -394,18 +433,17 @@ public class WalletModel {
 		} else {
 			//Das newItem wird unter einem anderen Element eingefügt
 
-			//Variable extrahieren
-			List<WalletItem> children = parentItem.getChildren();
-
 			//Bestimme index, an dem das neue Item in die flatlist eingefügt werden soll
-			int index = calculateIndexForNewItem(parentItem, children);
+			int index = calculateIndexForNewItem(parentItem);
 
 			//Füge Item zur itemsFlatList an berechnetem Index hinzu
 			addItemToFlatListAtIndex(newItem, index);
 
-			//add to tree structure
+			//Füge das newItem zu den child-Elementen des parentItem hinzu
 			parentItem.addChild(newItem);
 		}
+
+		//setze modified auf true und starte einen Aufruf des Event Dispatcher
 		setModified(true);
 	}
 
@@ -417,24 +455,29 @@ public class WalletModel {
 		itemsFlatList.add(newItem);
 	}
 
-	private int calculateIndexForNewItem(WalletItem parentItem, List<WalletItem> children) {
-		int index;
-		if (children == null || children.size() == 0) {
-			//this parent category is empty, add after it
-			index = getItemIndex(parentItem);
+	private int calculateIndexForNewItem(WalletItem parentItem) {
+		//Variable extrahieren
+		List<WalletItem> childrenList = parentItem.getChildren();
+
+		//Prüfe, ob das parentItem child-Elemente besitzt
+		if (childrenList == null || childrenList.size() == 0) {
+			//Der Index des newItem entspricht jetzt dem Index des parentItem
+			return getItemIndex(parentItem);
 		} else {
-			//find the last child of the parentItem in the flat list and insert after that
-			WalletItem lastChildren = children.get(children.size() - 1);
-			index = getItemIndex(lastChildren);
+			//lastChildren bschreibt hier das letzte child des parentItem
+			WalletItem lastChildren = childrenList.get(childrenList.size() - 1);
+			//Der Index des newItem entspricht jetzt dem Index des letzten child-Elements des parentItem
+			return getItemIndex(lastChildren);
 		}
-		return index;
 	}
 
 	private void addItemToFlatListAtIndex(WalletItem newItem, int index) {
+		//Index entspricht dem letzten Item der itemsFlatList
 		if (index == itemsFlatList.size() - 1)
-			//last one, just append
+			//Füge das item dem Ende der Liste hinzu
 			itemsFlatList.add(newItem);
 		else
+			//Füge das Item an der Stelle nach dem berechneten Index hinzu
 			itemsFlatList.add(index + 1, newItem);
 	}
 
