@@ -95,126 +95,55 @@ public class PasswordForm implements ActionListener {
 		this.title = title;
 		init();
 		new JTextFieldFocusEvents();
+		setupMouseEvents();
 		//new ActionTest();
 	}
 
 	//* Anfang Aufgabe 1 *//
 	//Handle the FocusEvents
 	public class JTextFieldFocusEvents extends JFrame implements FocusListener{
-		//TextFields
-		public JTextFieldFocusEvents(){
 
+		//Constructor
+		public JTextFieldFocusEvents(){
+			JTextField[] textFields = {textField1,textField2,textField3};
+
+			for(JTextField textField : textFields){
+				textField.setFont(new Font("SansSerif",Font.BOLD, 20));
+				textField.setHorizontalAlignment(JTextField.CENTER);
+				textField.setCaretColor(Color.WHITE);
+			}
+
+
+
+
+			//Initialize fields with value 0
 			spinner1Item = new Item(0, "0");
 			spinner2Item = new Item(0, "0");
 			spinner3Item = new Item(0, "0");
-			//System.out.println("Textfields are now instantiated");
 
+			//Set textfields to *
 			textField1.setText("*");
 			textField2.setText("*");
 			textField3.setText("*");
 
+			//Create document filters for the text fields
 			createFilteredField(textField1);
 			createFilteredField(textField2);
 			createFilteredField(textField3);
 
+			//Add Listeners
 			textField1.addFocusListener(this);
 			textField2.addFocusListener(this);
 			textField3.addFocusListener(this);
-
-			MouseWheelListener mouseWheelListener = new MouseWheelListener() {
-				@Override
-				public void mouseWheelMoved(MouseWheelEvent e) {
-					System.out.println("Scroll source " + ((JTextField)e.getSource()).getName());
-					JTextField textField = ((JTextField)e.getSource());
-					System.out.println("Scroll source" + textField.getName());
-					if(e.getWheelRotation() > 0){
-						if(!Objects.equals(textField.getText(), "*")){
-							currentSelectedTextField.setText(String.valueOf((((Integer.parseInt(currentSelectedTextField.getText()) - 1) % 10) + 10) % 10));
-						}
-					} else if(e.getWheelRotation() < 0){
-						//System.out.println("mod value " + (String.valueOf((Integer.parseInt(textField1.getText()) - 1) % 10)));
-						if(!Objects.equals(textField.getText(), "*")){
-							currentSelectedTextField.setText(String.valueOf((Integer.parseInt(currentSelectedTextField.getText()) + 1) % 10));
-						}
-					}
-				}
-			};
-
-			CreateMouseListener(textField1);
-			CreateMouseListener(textField2);
-			CreateMouseListener(textField3);
-
-			textField1.addMouseWheelListener(mouseWheelListener);
-			textField2.addMouseWheelListener(mouseWheelListener);
-			textField3.addMouseWheelListener(mouseWheelListener);
-
 		}
 
-		private void CreateMouseListener(JTextField textField) {
-			textField.addMouseListener(new MouseListener() {
 
-				/**
-				 * Invoked when the mouse button has been clicked (pressed
-				 * and released) on a component.
-				 *
-				 * @param e the event to be processed
-				 */
-				@Override
-				public void mouseClicked(MouseEvent e) {
-
-				}
-
-				/**
-				 * Invoked when a mouse button has been pressed on a component.
-				 *
-				 * @param e the event to be processed
-				 */
-				@Override
-				public void mousePressed(MouseEvent e) {
-
-				}
-
-				/**
-				 * Invoked when a mouse button has been released on a component.
-				 *
-				 * @param e the event to be processed
-				 */
-				@Override
-				public void mouseReleased(MouseEvent e) {
-
-				}
-
-				@Override
-				public void mouseEntered(MouseEvent e) {
-					System.out.println("mouse has entered textField");
-					currentSelectedTextField = (JTextField) e.getSource();
-					currentSelectedTextField.requestFocus();
-				}
-
-				/**
-				 * Invoked when the mouse exits a component.
-				 *
-				 * @param e the event to be processed
-				 */
-				@Override
-				public void mouseExited(MouseEvent e) {
-
-				}
-
-
-			});
-		}
 
 		public void focusGained(FocusEvent e) {
-			System.out.println("focus gained");
 			JTextField textField = (JTextField) e.getSource();
-
 			//Add new Filter to disable star symbol
 			createFilteredField(textField);
-			System.out.println(spinner1Item.getValue());
-			System.out.println(spinner2Item.getValue());
-			System.out.println(spinner3Item.getValue());
-
+			((AbstractDocument) textField.getDocument()).setDocumentFilter(createFilteredField(textField));
 			if(textField.equals(textField1) && spinner1Item != null){
 					textField1.setText(spinner1Item.getValue().toString());
 			} else if(textField.equals(textField2) && spinner2Item != null){
@@ -225,12 +154,9 @@ public class PasswordForm implements ActionListener {
 		}
 
 		public void focusLost(FocusEvent e) {
-			System.out.println("focus lost");
 			JTextField textField = (JTextField) e.getSource();
 
 			if(textField.equals(textField1) && spinner1Item != null){
-				System.out.println("spinner1 item is " + spinner1Item);
-				System.out.println("textField text is" + textField1.getText());
 				spinner1Item.setValue(Integer.parseInt(textField1.getText()));
 			} else if(textField.equals(textField2) && spinner2Item != null){
 				spinner2Item.setValue(Integer.parseInt(textField2.getText()));
@@ -244,23 +170,82 @@ public class PasswordForm implements ActionListener {
 		}
 	}
 
+	//Handle the mouse events
+	public void setupMouseEvents(){
+		MouseWheelListener mouseWheelListener = new MouseWheelListener() {
+			@Override
+			public void mouseWheelMoved(MouseWheelEvent e) {
+				if(e.getWheelRotation() > 0){
+					currentSelectedTextField.setText(String.valueOf((((Integer.parseInt(currentSelectedTextField.getText()) - 1) % 10) + 10) % 10));
+				} else if(e.getWheelRotation() < 0){
+					currentSelectedTextField.setText(String.valueOf((Integer.parseInt(currentSelectedTextField.getText()) + 1) % 10));
+				}
+			}
+		};
 
-	/*public class ActionTest extends JFrame implements ActionListener{
-		//TextFields
-		public ActionTest(){
-			System.out.println("Textfields are now instantiated");
+		CreateMouseListener(textField1);
+		CreateMouseListener(textField2);
+		CreateMouseListener(textField3);
 
-			textField1.addActionListener(this);
-			textField2.addActionListener(this);
-			textField3.addActionListener(this);
+		textField1.addMouseWheelListener(mouseWheelListener);
+		textField2.addMouseWheelListener(mouseWheelListener);
+		textField3.addMouseWheelListener(mouseWheelListener);
+	}
 
-		}
+	private void CreateMouseListener(JTextField textField) {
+		textField.addMouseListener(new MouseListener() {
 
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			System.out.println("action performed");
-		}
-	}*/
+			/**
+			 * Invoked when the mouse button has been clicked (pressed
+			 * and released) on a component.
+			 *
+			 * @param e the event to be processed
+			 */
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				textField.setCaretPosition(0);
+			}
+
+			/**
+			 * Invoked when a mouse button has been pressed on a component.
+			 *
+			 * @param e the event to be processed
+			 */
+			@Override
+			public void mousePressed(MouseEvent e) {
+
+			}
+
+			/**
+			 * Invoked when a mouse button has been released on a component.
+			 *
+			 * @param e the event to be processed
+			 */
+			@Override
+			public void mouseReleased(MouseEvent e) {
+
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				System.out.println("mouse has entered textField");
+				currentSelectedTextField = (JTextField) e.getSource();
+				currentSelectedTextField.requestFocus();
+			}
+
+			/**
+			 * Invoked when the mouse exits a component.
+			 *
+			 * @param e the event to be processed
+			 */
+			@Override
+			public void mouseExited(MouseEvent e) {
+
+			}
+
+
+		});
+	}
 
 	public DocumentFilter createDocumentFilterToAllowStars(){
 		return new DocumentFilter(){
@@ -268,34 +253,17 @@ public class PasswordForm implements ActionListener {
 			@Override
 			public void insertString(FilterBypass fb, int offs, String newString, AttributeSet a) throws BadLocationException {
 
-				String text = fb.getDocument().getText(0, fb.getDocument().getLength());
-				//textField.setText("");
-				System.out.println("try inserting");
-				System.out.println("the current text is " + text);
-				System.out.println("The string to insert is " + newString);
-
 				if (newString.matches("[0-9*]")) {
 					remove(fb, offs, fb.getDocument().getLength());
 					super.insertString(fb, offs, newString, a);
-					//textField.setCaretPosition(0);
 				} else {
 					Toolkit.getDefaultToolkit().beep();
 				}
 			}
 
-
 			@Override
 			public void replace(FilterBypass fb, int offset, int length, String newString, AttributeSet attrs) throws BadLocationException {
-				String text = fb.getDocument().getText(0, fb.getDocument().getLength());
 				insertString(fb, offset, newString,attrs);
-				/*System.out.println("try replacing");
-				System.out.println("The current text is" + text);
-
-				if(newString.matches("[0-9]")){
-					super.replace(fb, offset, length, newString, attrs);
-				} else {
-					Toolkit.getDefaultToolkit().beep();
-				}*/
 			}
 
 			@Override
@@ -305,20 +273,11 @@ public class PasswordForm implements ActionListener {
 		};
 	}
 
-	public void createFilteredField(JTextField textField){
-		AbstractDocument document = (AbstractDocument) textField.getDocument();
-		final int maxCharacters = 1;
-		document.setDocumentFilter(new DocumentFilter(){
+	public DocumentFilter createFilteredField(JTextField textField){
+		return (new DocumentFilter(){
 
 			@Override
 			public void insertString(FilterBypass fb, int offs, String newString, AttributeSet a) throws BadLocationException {
-
-				String text = fb.getDocument().getText(0, fb.getDocument().getLength());
-				//textField.setText("");
-				System.out.println("try inserting");
-				System.out.println("the current text is " + text);
-				System.out.println("The string to insert is " + newString);
-
 				if (newString.matches("[0-9]")) {
 					remove(fb, offs, fb.getDocument().getLength());
 					super.insertString(fb, offs, newString, a);
@@ -328,19 +287,9 @@ public class PasswordForm implements ActionListener {
 				}
 			}
 
-
 			@Override
 			public void replace(FilterBypass fb, int offset, int length, String newString, AttributeSet attrs) throws BadLocationException {
-				String text = fb.getDocument().getText(0, fb.getDocument().getLength());
 				insertString(fb, offset, newString,attrs);
-				/*System.out.println("try replacing");
-				System.out.println("The current text is" + text);
-
-				if(newString.matches("[0-9]")){
-					super.replace(fb, offset, length, newString, attrs);
-				} else {
-					Toolkit.getDefaultToolkit().beep();
-				}*/
 			}
 
 			@Override
@@ -420,7 +369,9 @@ public class PasswordForm implements ActionListener {
 		comboBox2.addFocusListener(new MyFocusAdapter(comboBox2));
 		comboBox3.addFocusListener(new MyFocusAdapter(comboBox3));
 
-
+		comboBox1.setVisible(false);
+		comboBox2.setVisible(false);
+		comboBox3.setVisible(false);
 	}
 
 
